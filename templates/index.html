@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Expense Tracker</title>
+</head>
+<style>
+    body {
+        overflow-x: hidden;
+    }
+
+    .row {
+        justify-content: center;
+        text-align: center;
+    }
+
+    hr {
+        padding-bottom: 2em;
+    }
+
+    h3 {
+        padding-top: 2em;
+    }
+
+    table {
+        margin: 0 auto;
+    }
+
+    .btn-danger {
+        opacity: 0.5;
+        scale: 0.8
+    }
+
+    .btn-danger:hover {
+        opacity: 1;
+        scale: 0.9;
+    }
+
+    .btn-primary {
+        scale: 0.9
+    }
+
+    #last-request-feedback {
+        opacity: 0;
+    }
+
+</style>
+<body> 
+    <div class="container">
+        <div class="row" >
+            <h1>Expense Tracker</h1>
+        </div>  
+        <hr>
+        <div class="row">
+            <p id="last-request-feedback" class="alert alert-success">FooBar</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md">
+                <h3>Add expenses</h3>
+                <hr>    
+                <form id="add-expense-form">
+                    <label for="category">Category:</label>
+                    <select id="category">
+                        {% for id in categories: %}
+                            <option value="{{ categories[id] }}">{{ categories[id] }}</option>
+                        {% endfor %}
+                    </select>
+                
+                    <label for="expense-name">Expense Name:</label>
+                    <input type="text" id="expense-name" required>
+                
+                    <label for="amount">Amount:</label>
+                    <input type="number" id="amount" min="0" step="0.01" required>
+                
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" required>
+                    <script>/* Select today as the default value*/document.getElementById('date').valueAsDate = new Date();</script>
+                
+                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                </form>
+            </div>
+            <div class="col-md">
+                <h3>Expenses</h3>
+                <hr>
+                <table border="2">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th><input type="checkbox", checked="true", id="secureDeleteExpense", name="secureDeleteExpense">Ask?</input></th>
+                        </thead>
+                    <tbody id="expense-table-body">
+                        </tr>
+                        {% for expense in expenses: %}
+                            <tr>
+                                <td>{{ expense.id }}</td>
+                                <td>{{ expense.name }}</td>
+                                <td>{{ expense.amount }}</td>
+                                <td>{{ expense.date }}</td>
+                                <td>{{ expense.category }}</td>
+                                <td>
+                                    <button class="btn btn-danger" id="{{'delete-button-' ~ expense.id}}", onclick="deleteExpense(event)">Delete</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            </div>
+                <div class="row">
+                    <div class="col-md">
+                        <h3>Add Category</h3>
+                        <hr>
+                        <form id="add-category-form">
+                            <input type="text" id="category-name" placeholder="Category name">
+                            <button type="submit" class="btn btn-primary">Add Category</button>
+                        </form>
+                    </div>
+                    <div class="col-md">
+                        <h3>Categories</h3>
+                        <hr>
+                        <table border="2">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th><input type="checkbox", checked="true", id="secureDeleteCategory", name="secureDeleteCategory">Ask?</input></th>
+                                </tr>
+                            </thead>
+                            <tbody id="category-table-body">
+                                {% for id in categories: %}
+                                    <tr>
+                                        <td>{{ id }}</td>
+                                        <td>{{ categories[id] }}</td>
+                                        <td>
+                                            <button class="btn btn-danger" id="{{'delete-button-' + categories[id]}}", onclick="deleteCategory(event)">Delete</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+              <div class="col-md-4 d-flex align-items-center">
+                <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+                  <svg class="bi" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
+                </a>
+                <span class="mb-3 mb-md-0 text-muted">&copy; 2024 Expense Tracker by Njoyable</span>
+              </div>
+          
+              <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+                <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"></use></svg></a></li>
+                <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"></use></svg></a></li>
+                <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"></use></svg></a></li>
+              </ul>
+            </footer>
+          </div>
+    </div>
+    <script>
+
+        // Display the feedback message if there is one from the local storage and let it fade out
+        if (localStorage.getItem("last_request_feedback")) {
+            const message = localStorage.getItem("last_request_feedback");
+            const feedback = document.getElementById("last-request-feedback");
+            if (message.includes("Error")) {
+                feedback.className = "alert alert-danger";
+            } else {
+                feedback.className = "alert alert-success";
+            }
+
+            feedback.innerText = message;
+            feedback.style.opacity = 1;
+            localStorage.removeItem("last_request_feedback");
+            setTimeout(() => {
+                // Fade out the message after 3 seconds
+                const fadeInterval = setInterval(function () {
+                    if (feedback.style.opacity > 0) {
+                        feedback.style.opacity -= 0.1;
+                    } else {
+                        clearInterval(fadeInterval);
+                    }
+                }, 50);
+            }, 2000);
+            
+        }
+
+        // Register the form to submit new category
+        document.getElementById("add-category-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // prevent the form from submitting normally
+            const categoryName = document.getElementById("category-name").value;
+            fetch(`/category/${categoryName}`, {
+                method: "POST",
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("last_request_feedback", data.message);
+                location.reload()
+            })
+            .catch((error) => {
+                localStorage.setItem("last_request_feedback", error.message);
+                location.reload();
+            });
+        });
+
+        // Register the form to submit new expense
+        document.getElementById("add-expense-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // prevent the form from submitting normally
+
+            const category = document.getElementById("category").value;
+            const expenseName = document.getElementById("expense-name").value;
+            const amount = document.getElementById("amount").value;
+            const date = document.getElementById("date").value;
+
+            fetch("/expenses", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    category: category,
+                    name: expenseName,
+                    amount: amount,
+                    date: date,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("last_request_feedback", data.message);
+                location.reload();
+            })
+            .catch((error) => {
+                localStorage.setItem("last_request_feedback", error.message);
+                location.reload();
+            });
+        });
+
+        // Expense delete button
+        function deleteExpense(event) {
+            const secureDeleteExpense = document.getElementById('secureDeleteExpense');
+            const expenseId = event.target.id.split('-')[2];
+            if (secureDeleteExpense.checked) {
+                result = confirm('Are you sure you want to delete this expense?');
+                if (result) {
+                    // send DELETE request to /expenses/:id
+                    fetch(`/expenses/${expenseId}`, {
+                        method: 'DELETE'
+                    }).then(response => response.json())
+                    .then(data => {
+                        localStorage.setItem("last_request_feedback", data.message);
+                        location.reload();
+                    })
+                    .catch(error => {
+                        localStorage.setItem("last_request_feedback", error.message);
+                        console.log(error);
+                        //location.reload();
+                    });
+                }
+            }
+        }
+
+        // Category delete button
+        function deleteCategory(event) {
+            const secureDeleteCategory = document.getElementById('secureDeleteCategory');
+            const categoryName = event.target.id.split('-')[2];
+            if (secureDeleteCategory.checked) {
+                result = confirm('Are you sure you want to delete this category?');
+                if (result) {
+                    // send DELETE request to /category/:name
+                    fetch(`/category/${categoryName}`, {
+                        method: 'DELETE'
+                    }).then(response => response.json())
+                    .then(data => {
+                        localStorage.setItem("last_request_feedback", data.message);
+                        location.reload();
+                    })
+                    .catch(error => {
+                        localStorage.setItem("last_request_feedback", error.message);
+                        location.reload();
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
