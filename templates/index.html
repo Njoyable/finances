@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Expense Tracker</title>
 </head>
 <style>
@@ -102,7 +103,7 @@
                             <tr>
                                 <td>{{ expense.id }}</td>
                                 <td>{{ expense.name }}</td>
-                                <td>{{ expense.amount }}</td>
+                                <td>{{ "%0.2f" | format(expense.amount|float) }}</td>
                                 <td>{{ expense.date }}</td>
                                 <td>{{ expense.category }}</td>
                                 <td>
@@ -149,6 +150,94 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-3">
+                    <h3>Pie Chart</h3>
+                    <hr>
+                    <canvas id="pieChart" width="100px" height="100px"></canvas>
+                    <script>
+                        // Set up data and colors here once - will be kept so 
+                        const expensesByCategory = {{ summed_expenses_by_category | tojson }};
+                        const colorsForCategories = Object.keys(expensesByCategory).map(() => '#' + Math.floor(Math.random()*16788215).toString(16));
+                        // Append black at last for "All category"
+                        colorsForCategories.push("dark blue")
+                        const ctxPie = document.getElementById('pieChart').getContext('2d');
+                        const expensePieChart = new Chart(ctxPie, {
+                            type: 'pie',
+                            data: {
+                                labels: Object.keys(expensesByCategory),
+                                datasets: [{
+                                    label: 'Expenses by Category (Pie)',
+                                    data: Object.values(expensesByCategory),
+                                }]
+                            },
+                            options: {
+                                width: 100,
+                                height: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Expenses by Category'
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+                <div class="col-3">
+                    <h3>Column Chart</h3>
+                    <hr>
+                    <canvas id="columnChart", width="100px", height="100px"></canvas>
+                    <script>
+                        const ctxBar = document.getElementById('columnChart').getContext('2d');
+                        const expenseColumnChart = new Chart(ctxBar, {
+                            type: 'bar',
+                            data: {
+                                labels: Object.keys(expensesByCategory),
+                                datasets: [{
+                                    label: 'Expenses by Category (Bar)',
+                                    data: Object.values(expensesByCategory),
+                                }]
+                            },
+                            options: {
+                                maxWidth: 200,
+                                maxHeight: 200,
+                                title: {
+                                    display: true,
+                                    text: 'Expenses by Category'
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+                <div class="col-3">
+                    <h3>Line Chart</h3>
+                    <hr>
+                    <canvas id="lineChart", width="100px", height="100px"></canvas>
+                    <script>
+                        const expensesByDate = {{ summed_expenses_by_date | tojson }};
+                        const labels = Object.keys(expensesByDate);
+                        let i = 0
+                        const datasets = Object.keys(expensesByDate).map(category => {
+                            return {
+                                label: `${category} expenses by day`,
+                                data: expensesByDate[category],
+                            }
+                        });
+                        const ctxLine = document.getElementById('lineChart').getContext('2d');
+                        const expenseLineChart = new Chart(ctxLine, {
+                            type: 'line',
+                            data: {
+                                datasets: datasets
+                            },
+                            options: {
+                                title: {
+                                    display: true,
+                                    text: 'Expenses by Category'
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
         </div>
         <div class="container">
             <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
@@ -158,14 +247,8 @@
                 </a>
                 <span class="mb-3 mb-md-0 text-muted">&copy; 2024 Expense Tracker by Njoyable</span>
               </div>
-          
-              <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-                <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"></use></svg></a></li>
-                <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"></use></svg></a></li>
-                <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"></use></svg></a></li>
-              </ul>
             </footer>
-          </div>
+        </div>
     </div>
     <script>
 
