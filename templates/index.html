@@ -88,7 +88,7 @@
                 
                     <label for="date">Date:</label>
                     <input type="date" id="date" required>
-                    <script>/* Select today as the default value*/document.getElementById('date').valueAsDate = new Date();</script>
+                    <script>/* Select today as the default value*/document.getElementById("date").valueAsDate = new Date();</script>
                 
                     <button type="submit" class="btn btn-primary">Add Expense</button>
                 </form>
@@ -260,6 +260,32 @@
         </div>
     </div>
     <script>
+
+        // Display the feedback message if there is one from the local storage and let it fade out
+        if (localStorage.getItem("last_request_feedback")) {
+            const message = localStorage.getItem("last_request_feedback");
+            const feedback = document.getElementById("last-request-feedback");
+            if (message.includes("Error")) {
+                feedback.className = "alert alert-danger";
+            } else {
+                feedback.className = "alert alert-success";
+            }
+
+            feedback.innerText = message;
+            feedback.style.opacity = 1;
+            localStorage.removeItem("last_request_feedback");
+            setTimeout(() => {
+                // Fade out the message after 3 seconds
+                const fadeInterval = setInterval(function () {
+                    if (feedback.style.opacity > 0) {
+                        feedback.style.opacity -= 0.1;
+                    } else {
+                        clearInterval(fadeInterval);
+                    }
+                }, 50);
+            }, 10000);
+        }
+
         // Add onClick to sort the tables
         document.querySelectorAll('th').forEach(th => {
             th.addEventListener('click', function() {
@@ -297,38 +323,12 @@
         });
 
 
-        // Display the feedback message if there is one from the local storage and let it fade out
-        if (localStorage.getItem("last_request_feedback")) {
-            const message = localStorage.getItem("last_request_feedback");
-            const feedback = document.getElementById("last-request-feedback");
-            if (message.includes("Error")) {
-                feedback.className = "alert alert-danger";
-            } else {
-                feedback.className = "alert alert-success";
-            }
-
-            feedback.innerText = message;
-            feedback.style.opacity = 1;
-            localStorage.removeItem("last_request_feedback");
-            setTimeout(() => {
-                // Fade out the message after 3 seconds
-                const fadeInterval = setInterval(function () {
-                    if (feedback.style.opacity > 0) {
-                        feedback.style.opacity -= 0.1;
-                    } else {
-                        clearInterval(fadeInterval);
-                    }
-                }, 50);
-            }, 2000);
-            
-        }
-
         // Register the form to submit new category
         document.getElementById("add-category-form").addEventListener("submit", function(event) {
             event.preventDefault(); // prevent the form from submitting normally
             const categoryName = document.getElementById("category-name").value;
             fetch(`/category/${categoryName}`, {
-                method: "POST",
+                method: "POST"
             })
             .then(response => response.json())
             .then(data => {
@@ -353,7 +353,7 @@
             fetch("/expenses", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     category: category,
@@ -375,14 +375,14 @@
 
         // Expense delete button
         function deleteExpense(event) {
-            const secureDeleteExpense = document.getElementById('secureDeleteExpense');
+            const secureDeleteExpense = document.getElementById("secureDeleteExpense");
             const expenseId = event.target.id.split('-')[2];
             if (secureDeleteExpense.checked) {
-                result = confirm('Are you sure you want to delete this expense?');
+                result = confirm("Are you sure you want to delete this expense?");
                 if (result) {
                     // send DELETE request to /expenses/:id
                     fetch(`/expenses/${expenseId}`, {
-                        method: 'DELETE'
+                        method: "DELETE"
                     }).then(response => response.json())
                     .then(data => {
                         localStorage.setItem("last_request_feedback", data.message);
@@ -399,14 +399,14 @@
 
         // Category delete button
         function deleteCategory(event) {
-            const secureDeleteCategory = document.getElementById('secureDeleteCategory');
+            const secureDeleteCategory = document.getElementById("secureDeleteCategory");
             const categoryName = event.target.id.split('-')[2];
             if (secureDeleteCategory.checked) {
-                result = confirm('Are you sure you want to delete this category?');
+                result = confirm("Are you sure you want to delete this category?");
                 if (result) {
                     // send DELETE request to /category/:name
                     fetch(`/category/${categoryName}`, {
-                        method: 'DELETE'
+                        method: "DELETE"
                     }).then(response => response.json())
                     .then(data => {
                         localStorage.setItem("last_request_feedback", data.message);
