@@ -21,10 +21,10 @@ Follow these steps to get the project up and running on your local machine:
     ```bash
     pip install -r requirements.txt
     ```
-4. Initialize the database:
+4. Initialize the environment:
 
     ```bash
-    python init_db.py
+    python init.py
     ```
 
 4. Start the server:
