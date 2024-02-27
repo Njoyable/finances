@@ -104,7 +104,11 @@
                             <th>Amount</th>
                             <th>Date</th>
                             <th>Category</th>
-                            <th><input type="checkbox", checked="true", id="secureDeleteExpense", name="secureDeleteExpense">Ask?</input></th>
+                            <th>
+                                <input type="checkbox", checked="true", id="secureDeleteExpense", class="form-check-input" name="secureDeleteExpense">
+                                <label class="form-check-label">Ask?</label>
+                                </input>
+                            </th>
                         </thead>
                     <tbody id="expense-table-body">
                         </tr>
@@ -141,7 +145,12 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Name</th>
-                                    <th><input type="checkbox", checked="true", id="secureDeleteCategory", name="secureDeleteCategory">Ask?</input></th>
+                                    <th>
+                                        
+                                        <input type="checkbox", checked="true", id="secureDeleteCategory", class="form-check-input" name="secureDeleteCategory">
+                                        <label class="form-check-label">Ask?</label>
+                                        </input>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="category-table-body">
