@@ -20,13 +20,7 @@ def index():
             result = connection.execute("SELECT SUM(amount) FROM expenses WHERE category_id=?", [category_to_id[category]]).fetchone()[0]
             summed_expenses_by_category[category] = result if result else 0
         summed_expenses_by_date = dict()
-        #   Build a dictionary of expenses by category and date
-        #   {   "Food": { "2021-01-01": 100, "2021-01-02": 200, "2021-01-03": 300 },
-        #       "Rent": { "2021-01-01": 100, "2021-01-02": 200, "2021-01-03": 300 },
-        #       "Transportation": { "2021-01-01": 100, "2021-01-02": 200, "2021-01-03": 300 },
-        #       "Entertainment": { "2021-01-01": 100, "2021-01-02": 200, "2021-01-03": 300 },
-        #       "All": { "2021-01-01": 400, "2021-01-02": 800, "2021-01-03": 1200 }, ""
-        #   }
+        
         # Initialize the dictionary with all categories and "All" as keys for each date
         dates = set([str(expense["date"]) for expense in expenses])
         for category in [*id_to_category.values(), "All"]:
