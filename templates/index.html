@@ -5,10 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/css/bootstrap-select.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Expense Tracker</title>
 </head>
 <style>
+    
     body {
         overflow-x: hidden;
     }
@@ -73,24 +75,43 @@
                 <h3>Add expenses</h3>
                 <hr>    
                 <form id="add-expense-form">
-                    <label for="category">Category:</label>
-                    <select id="category">
-                        {% for id in categories: %}
-                            <option value="{{ categories[id] }}">{{ categories[id] }}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="row" style="padding-top: 0.5em; padding-bottom: 0.5em; text-align: left;">
+                        <label style="width: 10em" for="category">Category</label>
+                        <div class="col-3">
+                            <select id="category" style="width: 12em">
+                                {% for id in categories: %}
+                                    <option value="{{ categories[id] }}">{{ categories[id] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 
-                    <label for="expense-name">Expense Name:</label>
-                    <input type="text" id="expense-name" required>
+                    <div class="row" style="padding-top: 0.5em; padding-bottom: 0.5em; text-align: left;">
+                        <label style="width: 10em" for="expense-name">Expense Name</label>
+                        <div class="col-3">
+                            <input type="text" id="expense-name" style="width: 12em" required>
+                        </div>
+                    </div>
                 
-                    <label for="amount">Amount:</label>
-                    <input type="number" id="amount" min="0" step="0.01" required>
+                    <div class="row" style="padding-top: 0.5em; padding-bottom: 0.5em; text-align: left;">
+                        <label style="width: 10em" for="amount">Amount</label>
+                        <div class="col-3">
+                            <input type="number" id="amount" min="0" step="0.01" style="width: 12em" required>
+                        </div>
+                    </div>
                 
-                    <label for="date">Date:</label>
-                    <input type="date" id="date" required>
-                    <script>/* Select today as the default value*/document.getElementById("date").valueAsDate = new Date();</script>
+                    <div class="row" style="padding-top: 0.5em; padding-bottom: 0.5em; text-align: left;">
                 
-                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                        <label style="width: 10em" for="date">Date</label>
+
+                        <div class="col-3">
+                            <input type="date" id="date" style="width: 12em" required>
+                            <script>/* Select today as the default value*/document.getElementById("date").valueAsDate = new Date();</script>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <button type="submit" class="btn btn-primary">Add Expense</button>
+                    </div>
                 </form>
             </div>
             <div class="col-md">
@@ -256,6 +277,18 @@
                     </script>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md">
+                    <h3>Averages</h3>
+                    <hr>
+                    <select class="selectpicker">
+                        <option>Mustard</option>
+                        <option>Ketchup</option>
+                        <option>Relish</option>
+                    </select>
+                </div>
+            </div>
+
         </div>
         <div class="container">
             <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
