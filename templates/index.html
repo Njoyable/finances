@@ -195,9 +195,6 @@
                     <script>
                         // Set up data and colors here once - will be kept so 
                         const expensesByCategory = {{ summed_expenses_by_category | tojson }};
-                        const colorsForCategories = Object.keys(expensesByCategory).map(() => '#' + Math.floor(Math.random()*16788215).toString(16));
-                        // Append black at last for "All category"
-                        colorsForCategories.push("dark blue")
                         const ctxPie = document.getElementById('pieChart').getContext('2d');
                         const expensePieChart = new Chart(ctxPie, {
                             type: 'pie',
