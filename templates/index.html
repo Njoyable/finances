@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Expense Tracker</title>
+</head>
+<style>
+    
+    body {
+        overflow-x: hidden;
+    }
+
+    .row {
+        justify-content: center;
+        text-align: center;
+    }
+
+    hr {
+        padding-bottom: 2em;
+    }
+
+    h3 {
+        padding-top: 0.5em;
+    }
+
+    table {
+        margin: 0 auto;
+    }
+
+    .btn-danger {
+        opacity: 0.5;
+        scale: 0.8
+    }
+
+    .btn-danger:hover {
+        opacity: 1;
+        scale: 0.9;
+    }
+
+    .btn-primary {
+        scale: 0.9
+    }
+
+    #last-request-feedback {
+        opacity: 0;
+    }
+
+    td {
+        padding-left: 0.2em;
+        padding-right: 0.2em;
+    }
+
+    th:hover {
+        cursor: pointer;
+    }
+
+</style>
+<body> 
+    <div class="container">
+        <div class="row" >
+            <h1>Expense Tracker</h1>
+        </div>  
+        <hr>
+        <div class="row">
+            <p id="last-request-feedback" class="alert alert-success">FooBar</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md">
+                <h3>Add expenses</h3>
+                <hr>    
+                <form id="add-expense-form">
+                    <div class="row" style="padding-top: 0.5em; padding-bottom: 0.5em; text-align: left;">
+                        <label style="width: 10em" for="category">Category</label>
+                        <div class="col-3">
+                            <select id="category" style="width: 12em; height: 2em">
+                                {% for id in categories: %}
+                                    <option value="{{ categories[id] }}">{{ categories[id] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                
+                    <div class="row" style="padding-top: 0.5em; padding-bottom: 0.5em; text-align: left;">
+                        <label style="width: 10em; height: 2em;" for="expense-name">Expense Name</label>
+                        <div class="col-3">
+                            <input type="text" id="expense-name" style="width: 12em" required>
+                        </div>
+                    </div>
+                
+                    <div class="row" style="padding-top: 0.5em; padding-bottom: 0.5em; text-align: left;">
+                        <label style="width: 10em; height: 2em;" for="amount">Amount</label>
+                        <div class="col-3">
+                            <input type="number" id="amount" min="0" step="0.01" style="width: 12em" required>
+                        </div>
+                    </div>
+                
+                    <div class="row" style="padding-top: 0.5em; padding-bottom: 0.5em; text-align: left;">
+                        <label style="width: 10em; height: 2em;" for="date">Date</label>
+                        <div class="col-3">
+                            <input type="date" id="date" style="width: 12em" required>
+                            <script>/* Select today as the default value*/document.getElementById("date").valueAsDate = new Date();</script>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <button type="submit" class="btn btn-primary">Add Expense</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md">
+                <h3>Expenses</h3>
+                <hr>
+                <table border="2">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>
+                                <input type="checkbox", checked="true", id="secureDeleteExpense", class="form-check-input" name="secureDeleteExpense">
+                                <label class="form-check-label">Ask?</label>
+                                </input>
+                            </th>
+                        </thead>
+                    <tbody id="expense-table-body">
+                        </tr>
+                        {% for expense in expenses: %}
+                            <tr>
+                                <td>{{ expense.id }}</td>
+                                <td>{{ expense.name }}</td>
+                                <td>{{ "%0.2f" | format(expense.amount|float) }}</td>
+                                <td>{{ expense.date }}</td>
+                                <td>{{ expense.category }}</td>
+                                <td>
+                                    <button class="btn btn-danger" id="{{'delete-button-' ~ expense.id}}", onclick="deleteExpense(event)">Delete</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            </div>
+                <div class="row">
+                    <div class="col-md">
+                        <h3>Add Category</h3>
+                        <hr>
+                        <form id="add-category-form">
+                            <input type="text" id="category-name" placeholder="Category name">
+                            <button type="submit" class="btn btn-primary">Add Category</button>
+                        </form>
+                    </div>
+                    <div class="col-md">
+                        <h3>Categories</h3>
+                        <hr>
+                        <table border="2">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>
+                                        
+                                        <input type="checkbox", checked="true", id="secureDeleteCategory", class="form-check-input" name="secureDeleteCategory">
+                                        <label class="form-check-label">Ask?</label>
+                                        </input>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="category-table-body">
+                                {% for id in categories: %}
+                                    <tr>
+                                        <td>{{ id }}</td>
+                                        <td>{{ categories[id] }}</td>
+                                        <td>
+                                            <button class="btn btn-danger" id="{{'delete-button-' + categories[id]}}", onclick="deleteCategory(event)">Delete</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <h3>Pie Chart</h3>
+                    <hr>
+                    <canvas id="pieChart" width="100px" height="100px"></canvas>
+                    <script>
+                        // Set up data and colors here once - will be kept so 
+                        const expensesByCategory = {{ summed_expenses_by_category | tojson }};
+                        const ctxPie = document.getElementById('pieChart').getContext('2d');
+                        const expensePieChart = new Chart(ctxPie, {
+                            type: 'pie',
+                            data: {
+                                labels: Object.keys(expensesByCategory),
+                                datasets: [{
+                                    label: 'Expenses by Category (Pie)',
+                                    data: Object.values(expensesByCategory),
+                                }]
+                            },
+                            options: {
+                                width: 100,
+                                height: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Expenses by Category'
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+                <div class="col-3">
+                    <h3>Column Chart</h3>
+                    <hr>
+                    <canvas id="columnChart", width="100px", height="100px"></canvas>
+                    <script>
+                        const ctxBar = document.getElementById('columnChart').getContext('2d');
+                        const expenseColumnChart = new Chart(ctxBar, {
+                            type: 'bar',
+                            data: {
+                                labels: Object.keys(expensesByCategory),
+                                datasets: [{
+                                    label: 'Expenses by Category (Bar)',
+                                    data: Object.values(expensesByCategory),
+                                }]
+                            },
+                            options: {
+                                maxWidth: 200,
+                                maxHeight: 200,
+                                title: {
+                                    display: true,
+                                    text: 'Expenses by Category'
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+                <div class="col-3">
+                    <h3>Line Chart</h3>
+                    <hr>
+                    <canvas id="lineChart", width="100px", height="100px"></canvas>
+                    <script>
+                        const expensesByDate = {{ summed_expenses_by_date | tojson }};
+                        const labels = Object.keys(expensesByDate);
+                        let i = 0
+                        const datasets = Object.keys(expensesByDate).map(category => {
+                            return {
+                                label: `${category} expenses`,
+                                data: expensesByDate[category],
+                            }
+                        });
+                        const ctxLine = document.getElementById('lineChart').getContext('2d');
+                        const expenseLineChart = new Chart(ctxLine, {
+                            type: 'line',
+                            data: {
+                                datasets: datasets
+                            },
+                            options: {
+                                title: {
+                                    display: true,
+                                    text: 'Expenses by Category'
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md">
+                    <h3>Averages</h3>
+                    <hr>
+                    <select class="selectpicker">
+                        <option>Mustard</option>
+                        <option>Ketchup</option>
+                        <option>Relish</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+        <div class="container">
+            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+              <div class="col-md-4 d-flex align-items-center">
+                <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+                  <svg class="bi" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
+                </a>
+                <span class="mb-3 mb-md-0 text-muted">&copy; 2024 Expense Tracker by Njoyable</span>
+              </div>
+            </footer>
+        </div>
+    </div>
+    <script>
+
+        // Display the feedback message if there is one from the local storage and let it fade out
+        if (localStorage.getItem("last_request_feedback")) {
+            const message = localStorage.getItem("last_request_feedback");
+            const feedback = document.getElementById("last-request-feedback");
+            if (message.includes("Error")) {
+                feedback.className = "alert alert-danger";
+            } else {
+                feedback.className = "alert alert-success";
+            }
+
+            feedback.innerText = message;
+            feedback.style.opacity = 1;
+            localStorage.removeItem("last_request_feedback");
+            setTimeout(() => {
+                // Fade out the message after 3 seconds
+                const fadeInterval = setInterval(function () {
+                    if (feedback.style.opacity > 0) {
+                        feedback.style.opacity -= 0.1;
+                    } else {
+                        clearInterval(fadeInterval);
+                    }
+                }, 50);
+            }, 10000);
+        }
+
+        // Add onClick to sort the tables
+        document.querySelectorAll('th').forEach(th => {
+            th.addEventListener('click', function() {
+                const table = th.closest('table');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const index = th.cellIndex;
+                const direction = th.dataset.direction || 'asc';
+                const modifier = (direction === 'asc') ? 1 : -1;
+                const newDirection = (direction === 'asc') ? 'desc' : 'asc';
+                th.dataset.direction = newDirection;
+                rows.sort((a, b) => {
+                    var aText = a.children[index].textContent;
+                    var bText = b.children[index].textContent;
+                    if (aText === bText) return 0;
+                    
+                    // Check if column is amount or id and if so convert to float
+                    if (index === 2 || index === 0) {
+                        const diff =  parseFloat(aText) < parseFloat(bText) ? -1 : 1;
+                        return diff * modifier;
+                    }
+
+                    // Check if column is date and if so convert to date
+                    if (index === 3) {
+                        const diff = new Date(aText) < new Date(bText) ? -1 : 1;
+                        return diff * modifier;
+                    }
+
+                    const diff = aText < bText ? -1 : 1;
+                    return diff * modifier;
+                    return 0;
+                });
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+
+
+        // Register the form to submit new category
+        document.getElementById("add-category-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // prevent the form from submitting normally
+            const categoryName = document.getElementById("category-name").value;
+            fetch(`/category/${categoryName}`, {
+                method: "POST"
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("last_request_feedback", data.message);
+                location.reload()
+            })
+            .catch((error) => {
+                localStorage.setItem("last_request_feedback", error.message);
+                location.reload();
+            });
+        });
+
+        // Register the form to submit new expense
+        document.getElementById("add-expense-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // prevent the form from submitting normally
+
+            const category = document.getElementById("category").value;
+            const expenseName = document.getElementById("expense-name").value;
+            const amount = document.getElementById("amount").value;
+            const date = document.getElementById("date").value;
+
+            fetch("/expenses", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    category: category,
+                    name: expenseName,
+                    amount: amount,
+                    date: date,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("last_request_feedback", data.message);
+                location.reload();
+            })
+            .catch((error) => {
+                localStorage.setItem("last_request_feedback", error.message);
+                location.reload();
+            });
+        });
+
+        // Expense delete button
+        function deleteExpense(event) {
+            const secureDeleteExpense = document.getElementById("secureDeleteExpense");
+            const expenseId = event.target.id.split('-')[2];
+            if (secureDeleteExpense.checked) {
+                result = confirm("Are you sure you want to delete this expense?");
+                if (result) {
+                    // send DELETE request to /expenses/:id
+                    fetch(`/expenses/${expenseId}`, {
+                        method: "DELETE"
+                    }).then(response => response.json())
+                    .then(data => {
+                        localStorage.setItem("last_request_feedback", data.message);
+                        location.reload();
+                    })
+                    .catch(error => {
+                        localStorage.setItem("last_request_feedback", error.message);
+                        console.log(error);
+                        //location.reload();
+                    });
+                }
+            }
+        }
+
+        // Category delete button
+        function deleteCategory(event) {
+            const secureDeleteCategory = document.getElementById("secureDeleteCategory");
+            const categoryName = event.target.id.split('-')[2];
+            if (secureDeleteCategory.checked) {
+                result = confirm("Are you sure you want to delete this category?");
+                if (result) {
+                    // send DELETE request to /category/:name
+                    fetch(`/category/${categoryName}`, {
+                        method: "DELETE"
+                    }).then(response => response.json())
+                    .then(data => {
+                        localStorage.setItem("last_request_feedback", data.message);
+                        location.reload();
+                    })
+                    .catch(error => {
+                        localStorage.setItem("last_request_feedback", error.message);
+                        location.reload();
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
